@@ -1,10 +1,9 @@
-var express = require('express'),
+const express = require('express'),
     app = express(),
     port = process.env.PORT || 3001,
     keys = require('./keys.json'),
     Trello = require('./trello'),
     trello = new Trello(keys);
-
 
 
 app.get('/lists', function(req, res){
