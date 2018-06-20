@@ -16,16 +16,31 @@ module.exports = class Trello {
         switch (obj.name){
             case 'lists': {
                 request({method: 'GET', url: this.url.replace('{params}',`boards/${this.board}/lists`)}, function (error, _response, body) {
-                    if (error) throw new Error(error);
-                    response = (JSON.parse(body)).map(function (val) {return {id: val.id, name: val.name}});
+                    if (error) {
+                        console.log('REQUEST PARAMETERS: ',req.params);
+                        console.log('//--------------------------------------');
+                        console.log(error);
+                        console.log('//--------------------------------------');
+                        res.send([]);
+                    }
+                    response = (JSON.parse(body)).map(function (val) {return {id: val.id, name: val.name, type: 'list'}});
                     res.send(response);
                 });
                 break;
             }
-            case 'list':{
+            case 'list':{				
+				if (obj.id === 'undefined'){
+					console.log(new Date(), ' id is empty: ', obj.id);
+					break;
+				}
                 request({method: 'GET', url: this.url.replace('{params}',`lists/${obj.id}/cards`)}, function (error, _response, body) {
-                    if (error) throw new Error(error);
-                    response = (JSON.parse(body)).map(function(val){return {id: val.id, name: val.name, votes: val.badges.votes}});
+                    if (error) {
+                        console.log('//--------------------------------------');
+                        console.log(error);
+                        console.log('//--------------------------------------');
+                        res.send([]);
+                    };
+                    response = (JSON.parse(body)).map(function(val){return {id: val.id, name: val.name, votes: val.badges.votes, type: 'card'}});
                     response.sort(function(a,b){return b.votes - a.votes});
                     res.send(response);
                 });
